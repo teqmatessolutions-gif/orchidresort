@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
-import localLogo from "./assets/logo.png";
+import localLogo from "./assets/orchidlogo.png";
 // Lucide React is used for elegant icons
 import { BedDouble, Coffee, ConciergeBell, Package, ChevronRight, ChevronLeft, ChevronDown, Image as ImageIcon, Star, Quote, ChevronUp, MessageSquare, Send, X, Facebook, Instagram, Linkedin, Twitter, Moon, Sun, Droplet } from 'lucide-react';
 import { SiGooglemaps } from "react-icons/si";
@@ -731,24 +731,31 @@ export default function App() {
 
         const publicUrl = process.env.PUBLIC_URL;
         if (publicUrl && publicUrl !== ".") {
+            addCandidate(`${publicUrl.replace(/\/$/, "")}/orchidlogo.png`);
             addCandidate(`${publicUrl.replace(/\/$/, "")}/logo.png`);
         }
 
+        addCandidate("/orchidlogo.png");
         addCandidate("/logo.png");
+        addCandidate("/resort/orchidlogo.png");
         addCandidate("/resort/logo.png");
 
         if (typeof window !== "undefined") {
             const origin = window.location.origin;
+            addCandidate(`${origin}/orchidlogo.png`);
             addCandidate(`${origin}/logo.png`);
+            addCandidate(`${origin}/resort/orchidlogo.png`);
             addCandidate(`${origin}/resort/logo.png`);
             const { pathname } = window.location;
             if (pathname && pathname !== "/") {
                 const trimmedPath = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
                 if (trimmedPath) {
+                    addCandidate(`${trimmedPath}/orchidlogo.png`);
                     addCandidate(`${trimmedPath}/logo.png`);
                 }
                 const segments = pathname.split("/").filter(Boolean);
                 if (segments.length > 0) {
+                    addCandidate(`/${segments[0]}/orchidlogo.png`);
                     addCandidate(`/${segments[0]}/logo.png`);
                 }
             }
