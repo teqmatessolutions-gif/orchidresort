@@ -1948,7 +1948,7 @@ export default function App() {
                     </div>
                     <div className="text-center">
                         <p className="text-xs md:text-sm tracking-[0.25em] uppercase text-[#d4af37] font-bold">
-                            Orchid Resort
+                            Orchid Trails Resort
                         </p>
                         <p className="mt-2 text-xs md:text-sm text-gray-700">
                             Crafting your perfect stay...
