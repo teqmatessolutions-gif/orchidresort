@@ -725,12 +725,13 @@ const BackgroundAnimation = ({ theme }) => {
                 }
                 
                 @keyframes zoom-gentle {
-                    0% { transform: scale(1); }
-                    100% { transform: scale(1.05); }
+                    0% { transform: scale(1) translate(0, 0); }
+                    50% { transform: scale(1.08) translate(-2%, 2%); }
+                    100% { transform: scale(1.05) translate(2%, -2%); }
                 }
                 
                 .animate-zoom-gentle {
-                    animation: zoom-gentle 20s ease-in-out infinite alternate;
+                    animation: zoom-gentle 30s ease-in-out infinite;
                 }
                 
                 .animate-pulse-gentle {
