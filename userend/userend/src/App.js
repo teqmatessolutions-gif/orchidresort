@@ -670,6 +670,72 @@ const BackgroundAnimation = ({ theme }) => {
                     from { opacity: 0; transform: translateY(30px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
+                
+                @keyframes fade-in-up {
+                    0% { opacity: 0; transform: translateY(40px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes slide-in-left {
+                    0% { opacity: 0; transform: translateX(-50px); }
+                    100% { opacity: 1; transform: translateX(0); }
+                }
+                
+                @keyframes slide-in-right {
+                    0% { opacity: 0; transform: translateX(50px); }
+                    100% { opacity: 1; transform: translateX(0); }
+                }
+                
+                @keyframes float-gentle {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                
+                @keyframes bounce-gentle {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-8px); }
+                }
+                
+                @keyframes pulse-gentle {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.02); }
+                }
+                
+                .animate-fade-in-up {
+                    animation: fade-in-up 1s ease-out forwards;
+                    opacity: 0;
+                }
+                
+                .animate-slide-in-left {
+                    animation: slide-in-left 1s ease-out forwards;
+                    opacity: 0;
+                }
+                
+                .animate-slide-in-right {
+                    animation: slide-in-right 1s ease-out forwards;
+                    opacity: 0;
+                }
+                
+                .animate-float-gentle {
+                    animation: float-gentle 3s ease-in-out infinite;
+                }
+                
+                .animate-bounce-gentle {
+                    animation: bounce-gentle 2s ease-in-out infinite;
+                }
+                
+                @keyframes zoom-gentle {
+                    0% { transform: scale(1); }
+                    100% { transform: scale(1.05); }
+                }
+                
+                .animate-zoom-gentle {
+                    animation: zoom-gentle 20s ease-in-out infinite alternate;
+                }
+                
+                .animate-pulse-gentle {
+                    animation: pulse-gentle 2s ease-in-out infinite;
+                }
 
                 /* Lazy reveal utility - optimized for performance */
                 .reveal { opacity: 0; transform: translateY(18px) scale(.98); filter: blur(6px); will-change: opacity, transform, filter; }
@@ -2067,7 +2133,7 @@ export default function App() {
                                 src={getImageUrl(banner.image_url)}
                                 onError={(e) => { e.target.src = ITEM_PLACEHOLDER; }}
                                 alt={banner.title}
-                                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentBannerIndex ? 'opacity-100' : 'opacity-0'}`}
+                                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentBannerIndex ? 'opacity-100 animate-zoom-gentle' : 'opacity-0'}`}
                             />
                         ))}
                     </>
@@ -2080,15 +2146,15 @@ export default function App() {
                     <div className="max-w-5xl mx-auto">
                         {/* Contact Info */}
                         {resortInfo && (
-                            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 mb-10 text-white text-sm md:text-base drop-shadow-lg">
+                            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 mb-10 text-white text-sm md:text-base drop-shadow-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                                 {resortInfo.email && (
-                                    <span className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-lg border border-white/20 shadow-md">
+                                    <span className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-lg border border-white/20 shadow-md animate-float-gentle" style={{ animationDelay: '0.3s' }}>
                                         <span className="text-white">✉</span>
                                         {resortInfo.email}
                                     </span>
                                 )}
                                 {resortInfo.phone && (
-                                    <span className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-lg border border-white/20 shadow-md">
+                                    <span className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-lg border border-white/20 shadow-md animate-float-gentle" style={{ animationDelay: '0.4s' }}>
                                         <span className="text-white">📞</span>
                                         {resortInfo.phone}
                                     </span>
@@ -2098,21 +2164,21 @@ export default function App() {
                         
                         {/* Main Heading - Banner Title and Description */}
                         {bannerData.length > 0 && bannerData[currentBannerIndex] && (
-                            <div className="mb-10">
+                            <div className="mb-10 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                                 {bannerData[currentBannerIndex].title && (
-                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 leading-tight text-white drop-shadow-2xl">
+                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 leading-tight text-white drop-shadow-2xl animate-slide-in-left">
                                         {bannerData[currentBannerIndex].title}
                                     </h1>
                                 )}
                                 {bannerData[currentBannerIndex].subtitle && (
-                                    <p className="text-3xl md:text-4xl lg:text-5xl font-medium leading-relaxed text-white/90 drop-shadow-lg">
+                                    <p className="text-3xl md:text-4xl lg:text-5xl font-medium leading-relaxed text-white/90 drop-shadow-lg animate-slide-in-right">
                                         {bannerData[currentBannerIndex].subtitle}
                                     </p>
                                 )}
                             </div>
                         )}
                         {(!bannerData.length || !bannerData[currentBannerIndex]) && (
-                            <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-10 leading-tight text-white drop-shadow-2xl">
+                            <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-10 leading-tight text-white drop-shadow-2xl animate-fade-in-up">
                                 Stay enjoying the cozy indoors
                                 <br />
                                 and tranquil outdoors.
@@ -2121,11 +2187,11 @@ export default function App() {
                     </div>
                     
                     {/* Book Now Button at Bottom */}
-                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
+                    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 animate-bounce-gentle">
                         <button
                             type="button"
                             onClick={() => { setShowAmenities(false); setIsGeneralBookingOpen(true); }}
-                            className="px-12 py-5 bg-black/80 text-white font-bold text-lg md:text-xl rounded-xl shadow-2xl hover:bg-black/90 transition-all duration-300 transform hover:scale-105 border-2 border-white/30 uppercase tracking-wider backdrop-blur-sm"
+                            className="px-12 py-5 bg-black/80 text-white font-bold text-lg md:text-xl rounded-xl shadow-2xl hover:bg-black/90 transition-all duration-300 transform hover:scale-105 border-2 border-white/30 uppercase tracking-wider backdrop-blur-sm animate-pulse-gentle"
                         >
                             Book Now
                         </button>
