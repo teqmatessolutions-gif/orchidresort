@@ -2104,9 +2104,9 @@ export default function App() {
                                         {bannerData[currentBannerIndex].title}
                                     </h1>
                                 )}
-                                {bannerData[currentBannerIndex].description && (
+                                {bannerData[currentBannerIndex].subtitle && (
                                     <p className="text-3xl md:text-4xl lg:text-5xl font-medium leading-relaxed text-white/90 drop-shadow-lg">
-                                        {bannerData[currentBannerIndex].description}
+                                        {bannerData[currentBannerIndex].subtitle}
                                     </p>
                                 )}
                             </div>
