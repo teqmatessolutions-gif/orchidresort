@@ -108,6 +108,92 @@ async def create_package_api(
         raise HTTPException(status_code=500, detail=f"Failed to create package: {str(e)}")
 
 
+@router.post("/", response_model=PackageOut)  # Handle trailing slash
+async def create_package_api_slash(
+    title: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    booking_type: str = Form("room_type"),
+    room_types: str = Form(None),
+    images: List[UploadFile] = File([]),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Handle POST /packages/ with trailing slash"""
+    try:
+        # Validate booking_type
+        if booking_type not in ["whole_property", "room_type"]:
+            raise HTTPException(status_code=400, detail="booking_type must be either 'whole_property' or 'room_type'")
+        
+        # If booking_type is room_type, room_types must be provided
+        if booking_type == "room_type" and not room_types:
+            raise HTTPException(status_code=400, detail="room_types is required when booking_type is 'room_type'")
+        
+        # If booking_type is whole_property, room_types should be empty
+        if booking_type == "whole_property":
+            room_types = None
+        
+        image_urls = []
+        try:
+            for img in images:
+                # Generate unique filename - handle case where filename might be None
+                original_filename = img.filename if img.filename else "image.jpg"
+                filename = f"pkg_{uuid.uuid4().hex}_{original_filename}"
+                file_path = os.path.join(UPLOAD_DIR, filename)
+                
+                # Use async file operations for better performance with large files
+                try:
+                    # Read file content asynchronously
+                    contents = await img.read()
+                    # Write to disk
+                    with open(file_path, "wb") as buffer:
+                        buffer.write(contents)
+                except (AttributeError, TypeError):
+                    # Fallback to synchronous if async methods not available
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(img.file, buffer)
+                
+                # Store with leading slash for proper URL construction
+                normalized_path = file_path.replace('\\', '/')
+                image_urls.append(f"/{normalized_path}")
+        except Exception as img_error:
+            import traceback
+            error_detail = f"Failed to save package images: {str(img_error)}\n{traceback.format_exc()}"
+            print(f"ERROR: {error_detail}")
+            import sys
+            sys.stderr.write(f"ERROR in create_package_api_slash (image upload): {error_detail}\n")
+            raise HTTPException(status_code=500, detail=f"Failed to upload images: {str(img_error)}")
+
+        try:
+            return crud_package.create_package(db, title, description, price, image_urls, booking_type, room_types)
+        except Exception as db_error:
+            import traceback
+            error_detail = f"Failed to create package in database: {str(db_error)}\n{traceback.format_exc()}"
+            print(f"ERROR: {error_detail}")
+            import sys
+            sys.stderr.write(f"ERROR in create_package_api_slash (database): {error_detail}\n")
+            # Clean up uploaded images if package creation fails
+            for img_url in image_urls:
+                try:
+                    # Remove leading slash to get actual file path
+                    file_path = img_url.lstrip('/')
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                except Exception as cleanup_error:
+                    print(f"Warning: Failed to cleanup image {img_url}: {str(cleanup_error)}")
+            raise HTTPException(status_code=500, detail=f"Failed to create package: {str(db_error)}")
+    except HTTPException:
+        # Re-raise HTTP exceptions (like validation errors) as-is
+        raise
+    except Exception as e:
+        import traceback
+        error_detail = f"Unexpected error in create_package_api_slash: {str(e)}\n{traceback.format_exc()}"
+        print(f"ERROR: {error_detail}")
+        import sys
+        sys.stderr.write(f"ERROR in create_package_api_slash: {error_detail}\n")
+        raise HTTPException(status_code=500, detail=f"Failed to create package: {str(e)}")
+
+
 @router.put("/{package_id}", response_model=PackageOut)
 async def update_package_api(
     package_id: int,
