@@ -2100,12 +2100,12 @@ export default function App() {
                         {bannerData.length > 0 && bannerData[currentBannerIndex] && (
                             <div className="mb-10">
                                 {bannerData[currentBannerIndex].title && (
-                                    <h1 className="text-4xl md:text-6xl lg:text-8xl font-extrabold mb-4 leading-tight text-white drop-shadow-2xl">
+                                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-4 leading-tight text-white drop-shadow-2xl">
                                         {bannerData[currentBannerIndex].title}
                                     </h1>
                                 )}
                                 {bannerData[currentBannerIndex].description && (
-                                    <p className="text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed text-white/90 drop-shadow-lg">
+                                    <p className="text-3xl md:text-4xl lg:text-5xl font-medium leading-relaxed text-white/90 drop-shadow-lg">
                                         {bannerData[currentBannerIndex].description}
                                     </p>
                                 )}
