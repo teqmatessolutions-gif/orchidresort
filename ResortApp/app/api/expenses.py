@@ -26,9 +26,11 @@ async def create_expense(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # Ensure upload directory exists
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+
     image_path = None
-    if image:
-        # Safe filename using UUID
+    if image and image.filename:
         filename = f"{employee_id}_{uuid.uuid4().hex}_{image.filename}"
         file_location = os.path.join(UPLOAD_DIR, filename)
         with open(file_location, "wb") as buffer:
@@ -76,3 +78,26 @@ def get_expense_image(filename: str):
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(filepath)
+
+@router.delete("/{expense_id}")
+def delete_expense(
+    expense_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    expense = expense_crud.get_expense_by_id(db, expense_id)
+    if not expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    
+    # Delete associated image file if it exists
+    if expense.image:
+        image_path = expense.image
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+            except Exception as e:
+                # Log error but continue with expense deletion
+                print(f"Error deleting image file {image_path}: {e}")
+    
+    expense_crud.delete_expense(db, expense_id)
+    return {"message": "Expense deleted successfully"}

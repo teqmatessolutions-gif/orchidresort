@@ -15,7 +15,7 @@ class RoleOut(RoleBase):
     name: str
     permissions: Optional[List[str]] = None
     model_config = ConfigDict(from_attributes=True)
-    
+
     @field_validator('permissions', mode='before')
     @classmethod
     def parse_permissions(cls, v):

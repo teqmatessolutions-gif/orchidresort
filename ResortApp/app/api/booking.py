@@ -19,7 +19,7 @@ import uuid
 UPLOAD_DIR = "uploads/checkin_proofs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 from app.schemas.booking import BookingOut, BookingRoomOut
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 class PaginatedBookingResponse(BaseModel):
     total: int
@@ -51,6 +51,29 @@ def get_bookings(db: Session = Depends(get_db), skip: int = 0, limit: int = 20, 
         # Convert to BookingOut format
         booking_results = []
         for booking in regular_bookings:
+            # Handle invalid emails gracefully
+            user_obj = None
+            if booking.user:
+                try:
+                    from app.schemas.user import UserOut
+                    user_data = booking.user
+                    email = user_data.email if hasattr(user_data, "email") else None
+                    if email and "@" in email and "." not in email.split("@")[1]:
+                        # Fix malformed email by appending .com
+                        email = email + ".com"
+                    user_dict = {
+                        "id": user_data.id,
+                        "name": user_data.name,
+                        "email": email,
+                        "phone": getattr(user_data, "phone", None),
+                        "is_active": getattr(user_data, "is_active", True),
+                        "role": user_data.role if hasattr(user_data, "role") else None
+                    }
+                    user_obj = UserOut.model_validate(user_dict)
+                except Exception as e:
+                    print(f"Warning: Could not create UserOut for booking {booking.id}: {str(e)}")
+                    user_obj = None
+
             booking_out = BookingOut(
                 id=booking.id,
                 guest_name=booking.guest_name,
@@ -63,7 +86,7 @@ def get_bookings(db: Session = Depends(get_db), skip: int = 0, limit: int = 20, 
                 children=booking.children,
                 id_card_image_url=getattr(booking, 'id_card_image_url', None),
                 guest_photo_url=getattr(booking, 'guest_photo_url', None),
-                user=booking.user,
+                user=user_obj,
                 is_package=False,
                 rooms=[br.room for br in booking.booking_rooms if br.room]
             )
